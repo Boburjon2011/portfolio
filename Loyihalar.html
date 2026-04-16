@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loyihalar | Bobur Creative Engineer</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --neon: #00f2ff; 
+      --neon-secondary: #bc13fe;
+      --dark: #020204;
+      --card-bg: rgba(255, 255, 255, 0.01);
+      --border-color: rgba(0, 242, 255, 0.15);
+      --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      background-color: var(--dark);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(0, 242, 255, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(188, 19, 254, 0.05) 0%, transparent 40%);
+      color: #f1f1f1;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    #cursor-dot { width: 6px; height: 6px; background: var(--neon); position: fixed; border-radius: 50%; z-index: 10000; pointer-events: none; transform: translate(-50%, -50%); }
+    #cursor-outline { width: 40px; height: 40px; border: 1.5px solid var(--neon); position: fixed; border-radius: 50%; z-index: 9999; pointer-events: none; transform: translate(-50%, -50%); transition: all 0.2s ease-out; }
+
+    .navbar-custom {
+      position: fixed; top: 25px; left: 50%; transform: translateX(-50%); z-index: 1050;
+      background: rgba(15, 15, 20, 0.8); backdrop-filter: blur(15px);
+      border: 1px solid var(--border-color); border-radius: 100px; padding: 0.5rem 2rem;
+    }
+
+    .project-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      overflow: hidden;
+      transition: var(--transition);
+      height: 100%;
+    }
+
+    .project-card:hover {
+      transform: translateY(-10px);
+      border-color: var(--neon);
+      box-shadow: 0 10px 30px rgba(0, 242, 255, 0.1);
+    }
+
+    .project-img-wrapper {
+      height: 200px;
+      overflow: hidden;
+      position: relative;
+      background: linear-gradient(135deg, #0a0a1a, #1a1a2e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .project-placeholder {
+      font-size: 4rem;
+      color: var(--neon);
+      opacity: 0.5;
+    }
+
+    .project-img {
+      width: 100%; height: 100%; object-fit: cover; transition: var(--transition);
+    }
+
+    .project-card:hover .project-img {
+      transform: scale(1.1);
+    }
+
+    .tech-tag {
+      font-size: 0.75rem;
+      padding: 4px 12px;
+      border-radius: 50px;
+      background: rgba(0, 242, 255, 0.1);
+      color: var(--neon);
+      border: 1px solid rgba(0, 242, 255, 0.2);
+    }
+
+    .neon-btn {
+      color: var(--neon);
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .neon-btn:hover {
+      text-shadow: 0 0 8px var(--neon);
+    }
+
+    .back-home {
+      color: #a1a1aa;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: 0.3s;
+    }
+    .back-home:hover { color: var(--neon); }
+
+    /* Filter Buttons */
+    .filter-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: #a1a1aa;
+      padding: 8px 24px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--neon);
+      color: #000;
+      border-color: var(--neon);
+    }
+
+    /* Search Input */
+    .search-input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      border-radius: 50px;
+      padding: 12px 20px;
+      color: white;
+      width: 100%;
+      max-width: 300px;
+      transition: var(--transition);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--neon);
+      box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
+    }
+
+    /* Project Count */
+    .project-count {
+      font-size: 0.9rem;
+      color: var(--neon);
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .project-card {
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    /* Scroll to Top Button */
+    .scroll-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--neon);
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+      z-index: 1000;
+      border: none;
+    }
+
+    .scroll-top.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .scroll-top:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 20px var(--neon);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="cursor-dot"></div>
+  <div id="cursor-outline"></div>
+
+  <nav class="navbar-custom">
+    <a href="index.html" class="back-home"><i class="fas fa-arrow-left me-2"></i>Asosiy sahifaga qaytish</a>
+  </nav>
+
+  <div class="container py-5 mt-5">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <h1 class="display-4 fw-bold mt-4">Mening <span style="color:var(--neon)">Loyihalarim</span></h1>
+      <p class="text-secondary">Har bir loyiha — yangi tajriba va yuqori sifat namunasi.</p>
+    </div>
+
+    <!-- Filter and Search Section -->
+    <div class="row mb-5 align-items-center" data-aos="fade-up">
+      <div class="col-md-8 mb-3 mb-md-0">
+        <div class="d-flex flex-wrap gap-2">
+          <button class="filter-btn active" data-filter="all">Barchasi</button>
+          <button class="filter-btn" data-filter="web">Web Sayt</button>
+          <button class="filter-btn" data-filter="game">O'yin</button>
+          <button class="filter-btn" data-filter="app">Ilova</button>
+          <button class="filter-btn" data-filter="music">Musiqa</button>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <input type="text" class="search-input" id="searchInput" placeholder="🔍 Loyiha qidirish...">
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-12">
+        <p class="project-count" id="projectCount">Topildi: <span id="countNumber">0</span> ta loyiha</p>
+      </div>
+    </div>
+
+    <div class="row g-4" id="projectsContainer">
+      <!-- Loyihalar -->
+      <div class="col-md-4 project-item" data-category="web" data-name="Sensorika sayti">
+        <div class="project-card">
+          <div class="project-img-wrapper">
+            <div class="project-placeholder">
+              <img src="https://avatars.mds.yandex.net/i?id=9c070bfba7c237c1a81e693084941e5799413ade-5870594-images-thumbs&n=13" alt="">
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="d-flex gap-2 mb-3 flex-wrap">
+              <span class="tech-tag">HTML/CSS</span>
+              <span class="tech-tag">JavaScript</span>
+            </div>
+            <h4>Sensorika sayti</h4>
+            <p class="text-secondary small">Navigatsiya paneli va interaktiv interfeyslar bilan boyitilgan ta'lim markazi sayti.</p>
+            <a href="https://boburjon2011.github.io/sensorika/" class="neon-btn small">Ko'rish <i class="fas fa-external-link-alt ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 project-item" data-category="web" data-name="News Portal">
+        <div class="project-card">
+          <div class="project-img-wrapper">
+            <div class="project-placeholder">
+              <img src="https://avatars.mds.yandex.net/i?id=d2fb951e162379be6dcb90b02579b77b6d96c79d-5229055-images-thumbs&n=13" alt="">
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="d-flex gap-2 mb-3 flex-wrap">
+              <span class="tech-tag">Dynamic UI</span>
+              <span class="tech-tag">Live Search</span>
+            </div>
+            <h4>News Portal</h4>
+            <p class="text-secondary small">20 dan ortiq dinamik kartalar va qidiruv tizimiga ega yangiliklar portali.</p>
+            <a href="https://boburjon2011.github.io/1-loyiha/" class="neon-btn small">Ko'rish <i class="fas fa-external-link-alt ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 project-item" data-category="game" data-name="Modern RPS Game">
+        <div class="project-card">
+          <div class="project-img-wrapper">
+            <div class="project-placeholder">
+              <img src="https://avatars.mds.yandex.net/i?id=db5785906ff504f7b4a4dc4113fdb351867a5c45-5232881-images-thumbs&n=13" alt="">
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="d-flex gap-2 mb-3 flex-wrap">
+              <span class="tech-tag">Game Logic</span>
+              <span class="tech-tag">Neon UI</span>
+            </div>
+            <h4>Modern RPS Game</h4>
+            <p class="text-secondary small">Neon uslubidagi, score tracking va animatsiyalarga ega Tosh-Qaychi-Qog'oz o'yini.</p>
+            <a href="https://boburjon2011.github.io/tosh-qaychi-qog-oz/" class="neon-btn small">Ko'rish <i class="fas fa-external-link-alt ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 project-item" data-category="music" data-name="Music player">
+        <div class="project-card">
+          <div class="project-img-wrapper">
+            <div class="project-placeholder">
+              <img src="https://avatars.mds.yandex.net/i?id=7eae54dabb5c3320d0ad8a8f7b740663cd961a57-10933192-images-thumbs&n=13" alt="">
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="d-flex gap-2 mb-3 flex-wrap">
+              <span class="tech-tag">HTML/CSS</span>
+              <span class="tech-tag">JavaScript</span>
+            </div>
+            <h4>Music player</h4>
+            <p class="text-secondary small">Zamonaviy musiqa playeri</p>
+            <a href="https://boburjon2011.github.io/music-player/" class="neon-btn small">Ko'rish <i class="fas fa-external-link-alt ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 project-item" data-category="app" data-name="Task manager">
+        <div class="project-card">
+          <div class="project-img-wrapper">
+            <div class="project-placeholder">
+              <img src="https://avatars.mds.yandex.net/i?id=1f7294e032405f1f23c84c9b1c640dd4b4e3b9b7-5233284-images-thumbs&n=13" alt="">
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="d-flex gap-2 mb-3 flex-wrap">
+              <span class="tech-tag">HTML/CSS</span>
+              <span class="tech-tag">JavaScript</span>
+            </div>
+            <h4>Task manager</h4>
+            <p class="text-secondary small">Zamonaviy task manager</p>
+            <a href="https://boburjon2011.github.io/task-manajer/" class="neon-btn small">Ko'rish <i class="fas fa-external-link-alt ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 project-item" data-category="web" data-name="Kino sayti">
+        <div class="project-card">
+          <div class="project-img-wrapper">
+            <div class="project-placeholder">
+              <img src="https://avatars.mds.yandex.net/i?id=2a0000019d8ba3b51709859b5ed44eeb9c87-213586-fast-images&n=13" alt="">
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="d-flex gap-2 mb-3 flex-wrap">
+              <span class="tech-tag">HTML/CSS</span>
+              <span class="tech-tag">JavaScript</span>
+            </div>
+            <h4>Kino sayti</h4>
+            <p class="text-secondary small">Zamonaviy Warner Bros sayti</p>
+            <a href="https://boburjon2011.github.io/kino-sayt/" class="neon-btn small">Ko'rish <i class="fas fa-external-link-alt ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 project-item" data-category="web" data-name="Porsche sayti">
+        <div class="project-card">
+          <div class="project-img-wrapper">
+            <div class="project-placeholder">
+              <img src="https://avatars.mds.yandex.net/i?id=e03920f92da41f7ba8d26ccd30028f70382bf06c-4600873-images-thumbs&n=13" alt="">
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="d-flex gap-2 mb-3 flex-wrap">
+              <span class="tech-tag">HTML/CSS</span>
+              <span class="tech-tag">JavaScript</span>
+            </div>
+            <h4>Porsche sayti</h4>
+            <p class="text-secondary small">Porsche mashinasining zamonaviy sayti</p>
+            <a href="https://boburjon2011.github.io/porsche/" class="neon-btn small">Ko'rish <i class="fas fa-external-link-alt ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 project-item" data-category="web" data-name="Marvel sayti">
+        <div class="project-card">
+          <div class="project-img-wrapper">
+            <div class="project-placeholder">
+              <img src="https://avatars.mds.yandex.net/i?id=00c8ac2de81e17b7894103561e29d09664f52caf-7052380-images-thumbs&n=13" alt="">
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="d-flex gap-2 mb-3 flex-wrap">
+              <span class="tech-tag">HTML/CSS</span>
+              <span class="tech-tag">JavaScript</span>
+            </div>
+            <h4>Marvel sayti</h4>
+            <p class="text-secondary small">Zamonaviy Marvel sayti</p>
+            <a href="https://boburjon2011.github.io/marvel/" class="neon-btn small">Ko'rish <i class="fas fa-external-link-alt ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 project-item" data-category="game" data-name="Bitcoin clicker">
+        <div class="project-card">
+          <div class="project-img-wrapper">
+            <div class="project-placeholder">
+              <img src="https://avatars.mds.yandex.net/i?id=2a0000019d8b77e87a5fb5944a774087dc3d-1544156-fast-images&n=13" alt="">
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="d-flex gap-2 mb-3 flex-wrap">
+              <span class="tech-tag">HTML/CSS</span>
+              <span class="tech-tag">JavaScript</span>
+            </div>
+            <h4>Bitcoin clicker</h4>
+            <p class="text-secondary small">Zamonaviy Bitcoin clicker</p>
+            <a href="https://boburjon2011.github.io/js-uy-ishi-31/" class="neon-btn small">Ko'rish <i class="fas fa-external-link-alt ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="text-center py-5 mt-5">
+      <p class="text-secondary small">© 2026 Bobur — Barcha huquqlar himoyalangan.</p>
+    </footer>
+  </div>
+
+  <!-- Scroll to Top Button -->
+  <button class="scroll-top" id="scrollTopBtn">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({ duration: 1000, once: true });
+
+    // Kursor harakati
+    const dot = document.getElementById('cursor-dot');
+    const outline = document.getElementById('cursor-outline');
+    
+    window.addEventListener('mousemove', (e) => {
+      dot.style.top = `${e.clientY}px`;
+      dot.style.left = `${e.clientX}px`;
+      outline.style.top = `${e.clientY}px`;
+      outline.style.left = `${e.clientX}px`;
+    });
+
+    // Filter and Search Functionality
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const searchInput = document.getElementById('searchInput');
+    const projectItems = document.querySelectorAll('.project-item');
+    const countSpan = document.getElementById('countNumber');
+
+    function filterProjects() {
+      const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+      const searchTerm = searchInput.value.toLowerCase();
+      let visibleCount = 0;
+
+      projectItems.forEach(item => {
+        const category = item.dataset.category;
+        const name = item.dataset.name.toLowerCase();
+        
+        const matchesFilter = activeFilter === 'all' || category === activeFilter;
+        const matchesSearch = name.includes(searchTerm);
+        
+        if (matchesFilter && matchesSearch) {
+          item.style.display = 'block';
+          visibleCount++;
+        } else {
+          item.style.display = 'none';
+        }
+      });
+      
+      countSpan.textContent = visibleCount;
+    }
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filterProjects();
+      });
+    });
+
+    searchInput.addEventListener('input', filterProjects);
+
+    // Initial count
+    filterProjects();
+
+    // Scroll to Top functionality
+    const scrollBtn = document.getElementById('scrollTopBtn');
+    
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        scrollBtn.classList.add('show');
+      } else {
+        scrollBtn.classList.remove('show');
+      }
+    });
+    
+    scrollBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  </script>
+</body>
+</html>
